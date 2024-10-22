@@ -1,0 +1,49 @@
+﻿@page "/categorias/create"
+@using Microsoft.EntityFrameworkCore
+@using BlazorApp.Models
+@inject IDbContextFactory<BlazorApp.Data.AppDbContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h2>Categorias</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="Categorias" OnValidSubmit="AddCategorias" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+            <div class="mb-3">
+                <label for="titulo" class="form-label">Titulo:</label> 
+                <InputText id="titulo" @bind-Value="Categorias.Titulo" class="form-control" /> 
+                <ValidationMessage For="() => Categorias.Titulo" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="descricao" class="form-label">Descricao:</label> 
+                <InputText id="descricao" @bind-Value="Categorias.Descricao" class="form-control" /> 
+                <ValidationMessage For="() => Categorias.Descricao" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/categorias">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private Categorias Categorias { get; set; } = new();
+
+    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task AddCategorias()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Categorias.Add(Categorias);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/categorias");
+    }
+}

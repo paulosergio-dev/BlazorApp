@@ -1,0 +1,48 @@
+﻿@page "/categorias/details"
+@using Microsoft.EntityFrameworkCore
+@using BlazorApp.Models
+@inject IDbContextFactory<BlazorApp.Data.AppDbContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h2>Categorias</h2>
+    <hr />
+    @if (categorias is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">Titulo</dt>
+            <dd class="col-sm-10">@categorias.Titulo</dd>
+            <dt class="col-sm-2">Descricao</dt>
+            <dd class="col-sm-10">@categorias.Descricao</dd>
+        </dl>
+        <div>
+            <a href="@($"/categorias/edit?id={categorias.Id}")">Edit</a> |
+            <a href="@($"/categorias")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    private Categorias? categorias;
+
+    [SupplyParameterFromQuery]
+    private int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        categorias = await context.Categorias.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (categorias is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}
